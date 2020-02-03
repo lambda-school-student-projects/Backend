@@ -1,12 +1,12 @@
-from rest_framework import serializers, viewsets
-from .models import PersonalNote
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+import json
 
-class PlayerSerializer(serializers.HyperlinkedModelSerializer):
+@api_view(["GET"])
+def initialize(request):
+    return JsonResponse({'foo':'bar'},safe=True)
 
-    class Meta:
-        model = Player
-        fields = ('user_name', 'score', 'player_avatar', 'current_room')
-
-class PlayerViewSet(viewsets.ModelViewSet):
-    serializer_class = PlayerSerializer
-    queryset = Player.objects.all()
+@api_view(["GET"])
+def worldmap(request):
+    return JsonResponse({'foo':'bar'},safe=True)

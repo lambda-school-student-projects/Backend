@@ -1,12 +1,9 @@
-from django.test import TestCase
 import unittest
 from RoomController import RoomController
 from Room import Room
 from Position import Position
 from CardinalDirection import CardinalDirection
 import json
-
-# Create your tests here.
 
 
 class RoomTests(unittest.TestCase):

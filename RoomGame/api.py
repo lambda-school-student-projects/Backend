@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from .RoomController import RoomController
+from .RoomModel.RoomController import RoomController
 
 import json
 

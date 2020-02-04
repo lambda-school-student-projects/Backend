@@ -9,15 +9,17 @@ consumerController = set()
 class RoomConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
-        for consumer in consumerController:
-            consumer.send(text_data=json.dumps({'message': "A new user has connected!!"}))
-        consumerController.add(self)
-        self.sendIDPrompt()
-        # self.gameLoop()
+        try:
+            self.playerID = self.scope['url_route']['kwargs']['playerID']
+        except:
+            print("No user idea provided - booting user.")
+            self.send(text_data="Need user id")
+            self.close()
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
-        consumerController.remove(self)
+        if self in consumerController:
+            consumerController.remove(self)
 
     def receive(self, text_data):
         try:
@@ -34,15 +36,15 @@ class RoomConsumer(WebsocketConsumer):
         elif messageType == "playerPos":
             self.gotPlayerPositionUpdate(messageData)
 
+        # # send to all players exampe
         # for conn in consumerController: #how to send to all consumers
         #     # conn.send(text_data=json.dumps({'message': "got message"}))
         #     conn.send(text_data=text_data)
 
-    def sendIDPrompt(self):
-        self.send(text_data="playerIDReq")
 
     def gotPlayerID(self, data):
         print(f"got player with id: {data['id']}")
+        consumerController.add(self)
 
     def gotPlayerPositionUpdate(self, data):
         pass

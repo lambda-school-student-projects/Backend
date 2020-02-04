@@ -10,20 +10,22 @@ from rest_framework.authtoken.models import Token
 #if changing the model -
 #https://github.com/LambdaSchool/Intro-Django/blob/master/guides/day2.md#migrations-with-new-fields
 class Player(models.Model):
-    # user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     current_room = models.CharField(max_length=30)
     score = models.IntegerField(default=0)
     player_avatar = models.IntegerField(default=0)
 
+    def initialize(self):
+        self.save()
 
-# @receiver(post_save, sender=User)
-# def create_user_player(sender, instance, created=False, **kwargs):
-#     if created:
-#         Player.objects.create(user=instance)
-#         Token.objects.create(user=instance)
+@receiver(post_save, sender=User)
+def create_user_player(sender, instance, created=False, **kwargs):
+    if created:
+        Player.objects.create(user=instance)
+        Token.objects.create(user=instance)
 
 
-# @receiver(post_save, sender=User)
-# def save_user_player(sender, instance, **kwargs):
-#     instance.player.save()
+@receiver(post_save, sender=User)
+def save_user_player(sender, instance, **kwargs):
+    instance.player.save()

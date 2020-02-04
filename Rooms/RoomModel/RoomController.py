@@ -126,5 +126,9 @@ class RoomController():
 
         print(outStr)
 
+    def gameLoop(self):
+        for room in self.occupiedRooms:
+            pass
+
 
 roomController = RoomController()

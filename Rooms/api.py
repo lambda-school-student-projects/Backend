@@ -32,7 +32,7 @@ def moveToRoom(request):
 
     if fromDirection is not None:
         roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
-        return JsonResponse({"currentRoom": player.current_room})
+        return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection)})
     else:
         return JsonResponse({"error": "That room isn't connected"})
 

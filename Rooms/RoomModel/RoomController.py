@@ -35,6 +35,8 @@ class RoomController():
         if newRoom in self.emptyRooms:
             self.emptyRooms.remove(newRoom)
 
+        newRoom.addPlayer(player)
+
         if fromDoor is None:
             position = Position(roomMid, roomMid)
         elif fromDoor == CardinalDirection.NORTH:
@@ -51,9 +53,8 @@ class RoomController():
     def removePlayerFromCurrentRoom(self, player):
         room = self.getRoom(player.current_room)
         if room:
-            if player in room.players:
-                room.players.remove(player)
-            if len(room.players) == 0 and room in self.occupiedRooms:
+            room.removePlayer(player)
+            if not room.occupied and room in self.occupiedRooms:
                 self.occupiedRooms.remove(room)
                 self.emptyRooms.add(room)
 

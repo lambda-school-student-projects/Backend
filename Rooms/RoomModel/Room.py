@@ -13,6 +13,7 @@ class Room():
         self.players = set()
         self.itemReward = None
         self.id = str(uuid.uuid4())
+        self.occupied = False
 
     def toDict(self):
         newDict = {}
@@ -69,6 +70,17 @@ class Room():
         if self.west:
             connectedDirections.add(CardinalDirection.WEST)
         return connectedDirections
+
+    def addPlayer(self, player):
+        self.players.add(player)
+        player.setRoom(self.id)
+        self.occupied = len(self.players) > 0
+
+    def removePlayer(self, player):
+        if player in self.players:
+            self.players.remove(player)
+        self.occupied = len(self.players) > 0
+
 
     def visualizeTextCharacter(self):
         connections = self.connectedInDirections()

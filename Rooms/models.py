@@ -30,6 +30,10 @@ class Player(models.Model):
         self.roomYPos = newPosition.y
         self.save()
 
+    def setRoom(self, newRoomID):
+        self.current_room = newRoomID
+        self.save()
+
 @receiver(post_save, sender=User)
 def create_user_player(sender, instance, created=False, **kwargs):
     if created:

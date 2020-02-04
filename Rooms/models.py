@@ -1,13 +1,29 @@
 from django.db import models
 from uuid import uuid4
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+
 
 #if changing the model -
 #https://github.com/LambdaSchool/Intro-Django/blob/master/guides/day2.md#migrations-with-new-fields
 class Player(models.Model):
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    user_name = models.CharField(max_length=30, unique=True)
-    user_pass = models.CharField(max_length=30)
     current_room = models.CharField(max_length=30)
     score = models.IntegerField(default=0)
     player_avatar = models.IntegerField(default=0)
 
+
+# @receiver(post_save, sender=User)
+# def create_user_player(sender, instance, created=False, **kwargs):
+#     if created:
+#         Player.objects.create(user=instance)
+#         Token.objects.create(user=instance)
+
+
+# @receiver(post_save, sender=User)
+# def save_user_player(sender, instance, **kwargs):
+#     instance.player.save()

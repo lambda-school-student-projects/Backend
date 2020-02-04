@@ -41,7 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Rooms',
     'rest_framework',
+    'rest_framework.authtoken',
     'livestream',
+    'users',
+    'allauth',
+    'allauth.account',
+    'rest_auth',
+    'django.contrib.sites',
+    'rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -128,8 +135,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# REST_FRAMEWORK = {
+REST_FRAMEWORK = {
 #     'DEFAULT_PERMISSION_CLASSES': [
 #         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
 #     ]
-# }
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}

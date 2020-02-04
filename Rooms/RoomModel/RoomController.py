@@ -5,6 +5,7 @@ from .Room import Room
 # from Player import Player # ready for importing
 import random
 import time
+import threading
 
 roomSize = 1250
 roomMid = roomSize / 2
@@ -15,6 +16,11 @@ class RoomController():
     def __init__(self, roomLimit=100):
         self.roomLimit = roomLimit
         self.generateRooms()
+        
+        thread = threading.Thread(target=self.gameLoop, args=())
+        thread.daemon = True
+        thread.start()
+
 
     def toDict(self):
         newDict = {}
@@ -170,8 +176,21 @@ class RoomController():
         print(outStr)
 
     def gameLoop(self):
-        for room in self.occupiedRooms:
-            pass
+
+        tEnd = time.monotonic() - 1
+        while time.monotonic() >= tEnd:
+            tEnd = time.monotonic() + 0.03333
+
+
+            # game logic
+            for room in self.occupiedRooms:
+                # compile all the player ids and locations into json
+                # send json to all players in the room with that info
+                pass
+
+            # delay if not enough time has elapsed
+            if tEnd > time.monotonic():
+                time.sleep(tEnd - time.monotonic())
 
 
 roomController = RoomController()

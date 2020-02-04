@@ -12,7 +12,7 @@ class Room():
         self.west = west
         self.players = set()
         self.itemReward = None
-        self.id = uuid.uuid4().hex
+        self.id = str(uuid.uuid4())
 
     def toDict(self):
         newDict = {}

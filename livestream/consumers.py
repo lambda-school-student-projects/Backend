@@ -32,6 +32,7 @@ class RoomConsumer(WebsocketConsumer):
 
         self.send(text_data=json.dumps({'message': message}))
 
+    # this should actually go somewhere else
     def gameLoop(self):
         alpha = list("abcdefghijklmnopqrstuvwxyz")
         counter = 0

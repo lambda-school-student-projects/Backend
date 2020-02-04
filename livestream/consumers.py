@@ -1,55 +1,31 @@
-from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 import time
+from Rooms.RoomModel.RoomController import roomController
 
 
+consumerController = set()
 
 class RoomConsumer(WebsocketConsumer):
-    def __init__(self, secondConsumerParameter):
-        super().__init__(secondConsumerParameter)
-        print("")
-        print("NEW consumer started up!")
-
     def connect(self):
-        print("New connection")
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = f"data_{self.scope['url_route']['kwargs']['room_name']}"
-
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
-
         self.accept()
-        # self.gameLoop()
-
+        for consumer in consumerController:
+            consumer.send(text_data=json.dumps({'message': "A new user has connected!!"}))
+        consumerController.add(self)
+        print(consumerController)
 
     def disconnect(self, close_code):
-        print("disconnected")
-
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name,
-            self.channel_name
-        )
+        consumerController.remove(self)
 
     def receive(self, text_data):
-        print("received something")
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chatMessage',
-                'message': message
-            }
-        )
+        # print(roomController.toDict())
 
-        # self.send(text_data=json.dumps({'message': message}))
-        # self.send(text_data=json.dumps({'message': message}))
-        # for test in vars(self.scope):
-        #     self.send(text_data=json.dumps({'message': test}))
+        for conn in consumerController:
+            conn.send(text_data=json.dumps({'message': repr(roomController.toDict())}))
+
 
     def chatMessage(self, event):
         message = event['message']

@@ -126,3 +126,5 @@ class RoomController():
 
         print(outStr)
 
+
+roomController = RoomController()

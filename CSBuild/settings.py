@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Rooms',
     'rest_framework',
+    'livestream',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +73,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'CSBuild.wsgi.application'
-
+ASGI_APPLICATION = 'CSBuild.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

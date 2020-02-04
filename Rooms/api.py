@@ -12,13 +12,37 @@ def initialize(request):
         return
     user = request.user
     player = user.player
-
     roomController.spawnPlayerInRoom(player, player.current_room)
+    return JsonResponse({'playerID':player.id, "currentRoom": player.current_room}, safe=True)
 
+@api_view(["POST"])
+def moveToRoom(request):
+    if request.user.is_anonymous:
+        return
+    user = request.user
+    player = user.player
+    data = json.loads(request.body)
+    newRoomID = data['roomID']
+    # print("newRoomID ", newRoomID)
+    oldRoomID = str(player.current_room)
+    # print("oldRoomID ", oldRoomID, type(oldRoomID))
+    newRoom = roomController.getRoom(newRoomID)
+    # print("newRoom ", newRoom)
+    if newRoom is None:
+        return JsonResponse({"error": "That room doesn't exist"})
+    oldRoom = roomController.getRoom(oldRoomID)
+    # print("oldRoom ", oldRoom)
+    fromDirection = newRoom.cardinalDirectionOfConnectedRoom(oldRoom)
+    # print("fromDirection ", fromDirection)
 
-    return JsonResponse({'playerID':player.id, "currentRoom": player.current_room},safe=True)
+    if fromDirection is not None:
+        roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
+        return JsonResponse({"currentRoom": player.current_room})
+    else:
+        return JsonResponse({"error": "That room isn't connected"})
+
 
 @api_view(["GET"])
 def worldmap(request):
 
-    return JsonResponse(roomController.toDict(),safe=True)
+    return JsonResponse(roomController.toDict(), safe=True)

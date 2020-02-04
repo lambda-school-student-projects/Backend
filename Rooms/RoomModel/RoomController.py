@@ -11,6 +11,7 @@ roomMid = roomSize / 2
 
 
 class RoomController():
+    # pass an integer in to initializer to modify the room limit
     def __init__(self, roomLimit=100):
         self.roomLimit = roomLimit
         self.generateRooms()
@@ -26,9 +27,15 @@ class RoomController():
         return newDict
 
     def getRoom(self, roomID):
-        return self.roomDict.get(roomID, None)
+        roomID = str(roomID)
+        room = self.roomDict.get(roomID, None)
+        # print(f"room: {room} roomID: {roomID} rooms: {self.roomDict}")
+        # print(type(roomID))
+        # for key in self.roomDict:
+        #     print("key: ", key, type(key))
+        return room
 
-    def spawnPlayerInRoom(self, player, roomID, fromDoor=None):
+    def spawnPlayerInRoom(self, player, roomID, fromDirection=None):
         self.removePlayerFromCurrentRoom(player)
         newRoom = self.roomDict.get(roomID, self.spawnRoom)
         self.occupiedRooms.add(newRoom)
@@ -37,13 +44,13 @@ class RoomController():
 
         newRoom.addPlayer(player)
 
-        if fromDoor is None:
+        if fromDirection is None:
             position = Position(roomMid, roomMid)
-        elif fromDoor == CardinalDirection.NORTH:
+        elif fromDirection == CardinalDirection.NORTH:
             position = Position(roomMid, roomSize)
-        elif fromDoor == CardinalDirection.EAST:
+        elif fromDirection == CardinalDirection.EAST:
             position = Position(roomSize, roomMid)
-        elif fromDoor == CardinalDirection.SOUTH:
+        elif fromDirection == CardinalDirection.SOUTH:
             position = Position(roomMid, 0)
         else: # west
             position = Position(0, roomMid)
@@ -109,6 +116,7 @@ class RoomController():
 
         self.rooms.add(newRoom)
         self.roomDict[newRoom.id] = newRoom
+        # print(self.roomDict)
         self.emptyRooms.add(newRoom)
         self.roomCoordinates.add(newRoom.position)
 
@@ -171,4 +179,4 @@ class RoomController():
             pass
 
 
-roomController = RoomController()
+roomController = RoomController(3)

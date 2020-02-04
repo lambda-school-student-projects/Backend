@@ -81,7 +81,19 @@ class Room():
             self.players.remove(player)
         self.occupied = len(self.players) > 0
 
-
+    def cardinalDirectionOfConnectedRoom(self, connectedRoom):
+        # this will only work if you pass in a room connected to this one. None otherwise.
+        if self.north is connectedRoom:
+            return CardinalDirection.NORTH
+        elif self.east is connectedRoom:
+            return CardinalDirection.EAST
+        elif self.south is connectedRoom:
+            return CardinalDirection.SOUTH
+        elif self.west is connectedRoom:
+            return CardinalDirection.WEST
+        else:
+            return None
+ 
     def visualizeTextCharacter(self):
         connections = self.connectedInDirections()
         if len(connections) == 4:
@@ -135,7 +147,6 @@ class Room():
             return " "
 
     def __str__(self):
-        connectedRooms = [self.north, self.south, self.east, self.west]
-        connectionCount = len(connectedRooms)
+        connectionCount = len(self.connectedInDirections())
         roomsString = "room" + ("" if connectionCount == 1 else "s")
-        return f"Room: {self.name} - connected to {connectionCount} {roomsString}"
+        return f"'Room: {self.name} id: {self.id} - connected to {connectionCount} {roomsString}'"

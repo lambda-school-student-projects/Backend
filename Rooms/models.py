@@ -28,6 +28,7 @@ class Player(models.Model):
     def setPosition(self, newPosition):
         self.roomXPos = newPosition.x
         self.roomYPos = newPosition.y
+        self.save()
 
 @receiver(post_save, sender=User)
 def create_user_player(sender, instance, created=False, **kwargs):

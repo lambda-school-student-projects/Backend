@@ -6,6 +6,10 @@ from .Room import Room
 import random
 import time
 
+roomSize = 1250
+roomMid = roomSize / 2
+
+
 class RoomController():
     def __init__(self, roomLimit=100):
         self.roomLimit = roomLimit
@@ -24,12 +28,25 @@ class RoomController():
     def getRoom(self, roomID):
         return self.roomDict.get(roomID, None)
 
-    def spawnPlayerInRoom(self, player, roomID):
+    def spawnPlayerInRoom(self, player, roomID, fromDoor=None):
         self.removePlayerFromCurrentRoom(player)
         newRoom = self.roomDict.get(roomID, self.spawnRoom)
         self.occupiedRooms.add(newRoom)
         if newRoom in self.emptyRooms:
             self.emptyRooms.remove(newRoom)
+
+        if fromDoor is None:
+            position = Position(roomMid, roomMid)
+        elif fromDoor == CardinalDirection.NORTH:
+            position = Position(roomMid, roomSize)
+        elif fromDoor == CardinalDirection.EAST:
+            position = Position(roomSize, roomMid)
+        elif fromDoor == CardinalDirection.SOUTH:
+            position = Position(roomMid, 0)
+        else: # west
+            position = Position(0, roomMid)
+
+        player.setPosition(position)
 
     def removePlayerFromCurrentRoom(self, player):
         room = self.getRoom(player.current_room)

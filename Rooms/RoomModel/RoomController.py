@@ -21,7 +21,27 @@ class RoomController():
         newDict["spawnRoom"] = self.spawnRoom.id
         return newDict
 
+    def getRoom(self, roomID):
+        return self.roomDict.get(roomID, None)
+
+    def spawnPlayerInRoom(self, player, roomID):
+        self.removePlayerFromCurrentRoom(player)
+        newRoom = self.roomDict.get(roomID, self.spawnRoom)
+        self.occupiedRooms.add(newRoom)
+        if newRoom in self.emptyRooms:
+            self.emptyRooms.remove(newRoom)
+
+    def removePlayerFromCurrentRoom(self, player):
+        room = self.getRoom(player.current_room)
+        if room:
+            if player in room.players:
+                room.players.remove(player)
+            if len(room.players) == 0 and room in self.occupiedRooms:
+                self.occupiedRooms.remove(room)
+                self.emptyRooms.add(room)
+
     def resetAllRooms(self):
+        self.roomDict = {}
         self.rooms = set()
         self.occupiedRooms = set()
         self.emptyRooms = set()
@@ -68,7 +88,9 @@ class RoomController():
             else:
                 # something went wrong
                 return
+
         self.rooms.add(newRoom)
+        self.roomDict[newRoom.id] = newRoom
         self.emptyRooms.add(newRoom)
         self.roomCoordinates.add(newRoom.position)
 

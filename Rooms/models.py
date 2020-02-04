@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from .RoomModel.Position import Position
 
 
 
@@ -12,12 +13,21 @@ from rest_framework.authtoken.models import Token
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    current_room = models.CharField(max_length=30)
+    current_room = models.UUIDField(default=uuid4)
     score = models.IntegerField(default=0)
     player_avatar = models.IntegerField(default=0)
+    roomXPos = models.FloatField(default=0)
+    roomYPos = models.FloatField(default=0)
 
     def initialize(self):
         self.save()
+
+    def getPosition(self):
+        return Position(self.roomXPos, self.roomYPos)
+
+    def setPosition(self, newPosition):
+        self.roomXPos = newPosition.x
+        self.roomYPos = newPosition.y
 
 @receiver(post_save, sender=User)
 def create_user_player(sender, instance, created=False, **kwargs):

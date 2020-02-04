@@ -10,7 +10,13 @@ import json
 def initialize(request):
     if request.user.is_anonymous:
         return
-    return JsonResponse({'foo':repr(consumerController)},safe=True)
+    user = request.user
+    player = user.player
+
+    roomController.spawnPlayerInRoom(player, player.current_room)
+
+
+    return JsonResponse({'playerID':player.id, "currentRoom": player.current_room},safe=True)
 
 @api_view(["GET"])
 def worldmap(request):

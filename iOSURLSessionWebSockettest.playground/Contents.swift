@@ -10,7 +10,7 @@ class SocketController {
     
     
     let urlSession = URLSession(configuration: .default)
-    let webSocketTask = urlSession.webSocketTask(with: "enterURLHere")
+    let webSocketTask = urlSession.webSocketTask(with: "ws://demos.kaazing.com/echo")
     
     webSocketTask.resume()
     

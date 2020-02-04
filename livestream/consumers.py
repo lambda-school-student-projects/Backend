@@ -4,7 +4,7 @@ import time
 from Rooms.RoomModel.RoomController import roomController
 
 
-consumerController = set()
+consumerController = {}
 
 class RoomConsumer(WebsocketConsumer):
     def connect(self):
@@ -15,11 +15,12 @@ class RoomConsumer(WebsocketConsumer):
             print("No user idea provided - booting user.")
             self.send(text_data="Need user id")
             self.close()
+            return
+        consumerController[self.playerID] = self
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
-        if self in consumerController:
-            consumerController.remove(self)
+        consumerController.pop(self.playerID, None)
 
     def receive(self, text_data):
         try:
@@ -41,10 +42,6 @@ class RoomConsumer(WebsocketConsumer):
         #     # conn.send(text_data=json.dumps({'message': "got message"}))
         #     conn.send(text_data=text_data)
 
-
-    def gotPlayerID(self, data):
-        print(f"got player with id: {data['id']}")
-        consumerController.add(self)
 
     def gotPlayerPositionUpdate(self, data):
         pass

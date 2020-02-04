@@ -23,17 +23,12 @@ def moveToRoom(request):
     player = user.player
     data = json.loads(request.body)
     newRoomID = data['roomID']
-    # print("newRoomID ", newRoomID)
     oldRoomID = str(player.current_room)
-    # print("oldRoomID ", oldRoomID, type(oldRoomID))
     newRoom = roomController.getRoom(newRoomID)
-    # print("newRoom ", newRoom)
     if newRoom is None:
         return JsonResponse({"error": "That room doesn't exist"})
     oldRoom = roomController.getRoom(oldRoomID)
-    # print("oldRoom ", oldRoom)
     fromDirection = newRoom.cardinalDirectionOfConnectedRoom(oldRoom)
-    # print("fromDirection ", fromDirection)
 
     if fromDirection is not None:
         roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)

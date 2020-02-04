@@ -27,12 +27,8 @@ class RoomController():
         return newDict
 
     def getRoom(self, roomID):
-        roomID = str(roomID)
+        roomID = str(roomID) ## sometimes the id is in uuid format - convert for dict key
         room = self.roomDict.get(roomID, None)
-        # print(f"room: {room} roomID: {roomID} rooms: {self.roomDict}")
-        # print(type(roomID))
-        # for key in self.roomDict:
-        #     print("key: ", key, type(key))
         return room
 
     def spawnPlayerInRoom(self, player, roomID, fromDirection=None):
@@ -116,7 +112,6 @@ class RoomController():
 
         self.rooms.add(newRoom)
         self.roomDict[newRoom.id] = newRoom
-        # print(self.roomDict)
         self.emptyRooms.add(newRoom)
         self.roomCoordinates.add(newRoom.position)
 
@@ -179,4 +174,4 @@ class RoomController():
             pass
 
 
-roomController = RoomController(3)
+roomController = RoomController()

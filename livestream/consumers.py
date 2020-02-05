@@ -32,6 +32,7 @@ class RoomConsumer(WebsocketConsumer):
         except:
             print("Failed decoding json - booting user.")
             self.close()
+            return
         # message = text_data_json['message']
 
         if messageType == "playerID":

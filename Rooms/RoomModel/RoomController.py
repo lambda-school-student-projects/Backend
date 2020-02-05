@@ -7,7 +7,7 @@ import random
 import time
 import threading
 
-roomSize = 1250
+roomSize = 740
 roomMid = roomSize / 2
 
 

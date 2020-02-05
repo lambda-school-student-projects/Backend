@@ -191,7 +191,6 @@ class RoomController():
                 # room = Room("test")
                 allPlayerInfo = list()
                 for player in room.players:
-                    # print(id(player))
                     playerInfo = {"id": str(player.id), "position": player.getPosition().toArray()}
                     allPlayerInfo.append(playerInfo)
                 

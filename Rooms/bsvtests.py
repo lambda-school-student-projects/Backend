@@ -1,8 +1,8 @@
 import unittest
-from RoomController import RoomController
-from Room import Room
-from Position import Position
-from CardinalDirection import CardinalDirection
+from bsvRoomController import RoomController
+from bsvRoom import Room
+from bsvPosition import Position
+from bsvCardinalDirection import CardinalDirection
 import json
 
 

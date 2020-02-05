@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from .RoomModel.Position import Position
+from .bsvPosition import Position
 import time
 
 
@@ -33,6 +33,7 @@ class Player(models.Model):
             self.lastSave
         except:
             self.lastSave = 0
+        # only update database every few seconds
         if time.monotonic() > self.lastSave + 5:
             self.save()
             self.lastSave = time.monotonic()

@@ -13,7 +13,7 @@ def initialize(request):
     user = request.user
     player = user.player
     roomController.spawnPlayerInRoom(player, player.current_room)
-    return JsonResponse({'playerID':player.id, "currentRoom": player.current_room}, safe=True)
+    return JsonResponse({'playerID': player.id, "currentRoom": player.current_room, "spawnLocation": player.getPosition().toArray()})
 
 @api_view(["POST"])
 def moveToRoom(request):
@@ -32,7 +32,7 @@ def moveToRoom(request):
 
     if fromDirection is not None:
         roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
-        return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection)})
+        return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection), "spawnLocation": player.getPosition().toArray()})
     else:
         return JsonResponse({"error": "That room isn't connected"})
 

@@ -22,3 +22,4 @@ urlpatterns = [
     path('api/', include('Rooms.urls')),
     path('api/auth/', include('users.urls')),
 ]
+print("RIGHT THERE")

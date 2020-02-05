@@ -49,7 +49,7 @@ class RoomConsumer(WebsocketConsumer):
         positionList = data["position"]
         position = Position(positionList[0], positionList[1])
         self.player.setPosition(position)
-        # print(position)
+        print(position)
 
 
 

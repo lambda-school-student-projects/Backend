@@ -1,8 +1,9 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
 import time
+from Rooms.RoomModel.Position import Position
 from Rooms.RoomModel.RoomController import roomController
-
+from Rooms.models import Player
 
 consumerController = {}
 
@@ -17,6 +18,7 @@ class RoomConsumer(WebsocketConsumer):
             self.close()
             return
         consumerController[self.playerID] = self
+        self.player = Player.objects.get(id=self.playerID)
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
@@ -34,7 +36,7 @@ class RoomConsumer(WebsocketConsumer):
 
         if messageType == "playerID":
             self.gotPlayerID(messageData)
-        elif messageType == "playerPos":
+        elif messageType == "positionUpdate":
             self.gotPlayerPositionUpdate(messageData)
 
         # # send to all players exampe
@@ -44,7 +46,10 @@ class RoomConsumer(WebsocketConsumer):
 
 
     def gotPlayerPositionUpdate(self, data):
-        pass
+        positionList = data["position"]
+        position = Position(positionList[0], positionList[1])
+        self.player.setPosition(position)
+        # print(position)
 
 
 

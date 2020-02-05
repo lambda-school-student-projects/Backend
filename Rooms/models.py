@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from .RoomModel.Position import Position
-
+import time
 
 
 #if changing the model -
@@ -28,7 +28,14 @@ class Player(models.Model):
     def setPosition(self, newPosition):
         self.roomXPos = newPosition.x
         self.roomYPos = newPosition.y
-        self.save()
+
+        try:
+            self.lastSave
+        except:
+            self.lastSave = 0
+        if time.monotonic() > self.lastSave + 5:
+            self.save()
+            self.lastSave = time.monotonic()
 
     def setRoom(self, newRoomID):
         self.current_room = newRoomID

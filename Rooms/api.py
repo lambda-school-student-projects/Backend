@@ -29,12 +29,8 @@ def moveToRoom(request):
         return JsonResponse({"error": "That room doesn't exist"})
     oldRoom = roomController.getRoom(oldRoomID)
     fromDirection = newRoom.cardinalDirectionOfConnectedRoom(oldRoom)
-
-    if fromDirection is not None:
-        roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
-        return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection), "spawnLocation": player.getPosition().toArray()})
-    else:
-        return JsonResponse({"error": "That room isn't connected"})
+    roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
+    return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection), "spawnLocation": player.getPosition().toArray()})
 
 
 @api_view(["GET"])

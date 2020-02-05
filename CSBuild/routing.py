@@ -9,3 +9,4 @@ application = ProtocolTypeRouter({    # includes index by default
         )
     )
 })
+print("RIGHT HERE!")

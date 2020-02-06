@@ -38,6 +38,15 @@ class Player(models.Model):
             self.save()
             self.lastSave = time.monotonic()
 
+    def getDestination(self):
+        try:
+            return self.destination
+        except:
+            return Position(0,0)
+
+    def setDestination(self, destination):
+        self.destination = destination
+
     def setRoom(self, newRoomID):
         self.current_room = newRoomID
         self.save()

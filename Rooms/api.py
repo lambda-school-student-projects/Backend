@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from .bsvRoomController import roomController
 from livestream.consumers import consumerController
+from .models import Player
 
 import json
 
@@ -37,3 +38,15 @@ def moveToRoom(request):
 def worldmap(request):
 
     return JsonResponse(roomController.toDict(), safe=True)
+
+
+@api_view(["POST"])
+def playerinfo(request):
+    if request.user.is_anonymous:
+        return
+    data = json.loads(request.body)
+    requestedId = data["ID"]
+    requestedPlayer = Player.objects.get(id = requestedId)
+    playerProperties = {"player_avatar":requestedPlayer.player_avatar, "username":requestedPlayer.user.username}
+    return JsonResponse(playerProperties)
+

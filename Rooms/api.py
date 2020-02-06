@@ -7,12 +7,16 @@ from .models import Player
 
 import json
 
-@api_view(["GET"])
+@api_view(["POST"])
 def initialize(request):
     if request.user.is_anonymous:
         return
     user = request.user
     player = user.player
+    data = json.loads(request.body)
+    player_avatar = data["player_avatar"]
+    player.player_avatar = player_avatar
+    player.save()
     roomController.spawnPlayerInRoom(player, player.current_room)
     return JsonResponse({'playerID': player.id, "currentRoom": player.current_room, "spawnLocation": player.getPosition().toArray()})
 
@@ -45,7 +49,7 @@ def playerinfo(request):
     if request.user.is_anonymous:
         return
     data = json.loads(request.body)
-    requestedId = data["ID"]
+    requestedId = data["id"]
     requestedPlayer = Player.objects.get(id = requestedId)
     playerProperties = {"player_avatar":requestedPlayer.player_avatar, "username":requestedPlayer.user.username}
     return JsonResponse(playerProperties)

@@ -179,8 +179,14 @@ class RoomController():
 
         print(outStr)
 
-    def gameLoop(self):
+    def playerDisconnected(self, player):
+        if player:
+            room = self.getRoom(str(player.current_room))
+            if room:
+                room.removePlayer(player)
 
+
+    def gameLoop(self):
         tEnd = time.monotonic() - 1
         while time.monotonic() >= tEnd:
             tEnd = time.monotonic() + 0.03333

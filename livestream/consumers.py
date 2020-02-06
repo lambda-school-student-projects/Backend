@@ -7,6 +7,12 @@ from Rooms.models import Player
 consumerController = {}
 
 class RoomConsumer(WebsocketConsumer):
+
+    def __init__(self, secondArg):
+        super().__init__(secondArg)
+        from Rooms.bsvRoomController import roomController
+        self.roomController = roomController
+
     def connect(self):
         self.accept()
         try:
@@ -17,12 +23,12 @@ class RoomConsumer(WebsocketConsumer):
             self.close()
             return
         consumerController[self.playerID] = self
-        from Rooms.bsvRoomController import roomController
-        self.player = roomController.allPlayers[self.playerID]
+        self.player = self.roomController.allPlayers[self.playerID]
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
         consumerController.pop(self.playerID, None)
+        self.roomController.playerDisconnected(self.player)
 
     def receive(self, text_data):
         try:

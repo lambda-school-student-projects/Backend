@@ -189,10 +189,9 @@ class RoomController():
             # game logic
             for room in self.occupiedRooms:
                 # room = Room("test")
-                allPlayerInfo = list()
+                allPlayerInfo = {}
                 for player in room.players:
-                    playerInfo = {str(player.id): {"position": player.getPosition().toArray()}}
-                    allPlayerInfo.append(playerInfo)
+                    allPlayerInfo[str(player.id)] = { "position": player.getPosition().toArray()}
                 
                 allPlayerJson = json.dumps({"messageType": "playerPositions", "data": allPlayerInfo})
                 for player in room.players:

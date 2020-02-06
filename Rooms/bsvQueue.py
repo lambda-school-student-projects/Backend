@@ -1,4 +1,4 @@
-from .DoublyLinkedList import DoublyLinkedList
+from .bsvDoublyLinkedList import DoublyLinkedList
 
 
 class Queue:

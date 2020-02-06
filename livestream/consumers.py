@@ -1,12 +1,18 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
 import time
-from Rooms.RoomModel.RoomController import roomController
-
+from Rooms.bsvPosition import Position
+from Rooms.models import Player
 
 consumerController = {}
 
 class RoomConsumer(WebsocketConsumer):
+
+    def __init__(self, secondArg):
+        super().__init__(secondArg)
+        from Rooms.bsvRoomController import roomController
+        self.roomController = roomController
+
     def connect(self):
         self.accept()
         try:
@@ -17,10 +23,12 @@ class RoomConsumer(WebsocketConsumer):
             self.close()
             return
         consumerController[self.playerID] = self
+        self.player = self.roomController.allPlayers[self.playerID]
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
         consumerController.pop(self.playerID, None)
+        self.roomController.playerDisconnected(self.player)
 
     def receive(self, text_data):
         try:
@@ -30,11 +38,12 @@ class RoomConsumer(WebsocketConsumer):
         except:
             print("Failed decoding json - booting user.")
             self.close()
+            return
         # message = text_data_json['message']
 
         if messageType == "playerID":
             self.gotPlayerID(messageData)
-        elif messageType == "playerPos":
+        elif messageType == "positionUpdate":
             self.gotPlayerPositionUpdate(messageData)
 
         # # send to all players exampe
@@ -44,7 +53,10 @@ class RoomConsumer(WebsocketConsumer):
 
 
     def gotPlayerPositionUpdate(self, data):
-        pass
+        positionList = data["position"]
+        position = Position(positionList[0], positionList[1])
+        self.player.setPosition(position)
+        # print(self.playerID, id(self.player), position)
 
 
 

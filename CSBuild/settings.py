@@ -26,7 +26,8 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'bsvbattleroyale.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]',
+                 'bsvbattleroyale.herokuapp.com', 'bsvbattle.redig.me']
 
 SITE_ID = 1
 
@@ -145,7 +146,7 @@ REST_FRAMEWORK = {
 #     ]
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
 }

@@ -1,13 +1,15 @@
-from .Queue import Queue
-from .Position import Position
-from .CardinalDirection import CardinalDirection
-from .Room import Room
+from .bsvQueue import Queue
+from .bsvPosition import Position
+from .bsvCardinalDirection import CardinalDirection
+from .bsvRoom import Room
 # from Player import Player # ready for importing
+from livestream.consumers import consumerController
 import random
 import time
 import threading
+import json
 
-roomSize = 1250
+roomSize = 740
 roomMid = roomSize / 2
 
 
@@ -44,6 +46,7 @@ class RoomController():
         if newRoom in self.emptyRooms:
             self.emptyRooms.remove(newRoom)
 
+        self.allPlayers[str(player.id)] = player
         newRoom.addPlayer(player)
 
         if fromDirection is None:
@@ -73,6 +76,7 @@ class RoomController():
         self.occupiedRooms = set()
         self.emptyRooms = set()
         self.roomCoordinates = set()
+        self.allPlayers = {}
 
         self.spawnRoom = Room("Spawn Area")
         self.addRoomConnection(self.spawnRoom, None, None)
@@ -175,8 +179,14 @@ class RoomController():
 
         print(outStr)
 
-    def gameLoop(self):
+    def playerDisconnected(self, player):
+        if player:
+            room = self.getRoom(str(player.current_room))
+            if room:
+                room.removePlayer(player)
 
+
+    def gameLoop(self):
         tEnd = time.monotonic() - 1
         while time.monotonic() >= tEnd:
             tEnd = time.monotonic() + 0.03333
@@ -184,9 +194,18 @@ class RoomController():
 
             # game logic
             for room in self.occupiedRooms:
-                # compile all the player ids and locations into json
-                # send json to all players in the room with that info
-                pass
+                # room = Room("test")
+                allPlayerInfo = {}
+                for player in room.players:
+                    allPlayerInfo[str(player.id)] = { "position": player.getPosition().toArray() }
+                
+                allPlayerJson = json.dumps({"messageType": "playerPositions", "data": allPlayerInfo})
+                for player in room.players:
+                    # print(room.name, player.id)
+                    playerWS = consumerController.get(str(player.id), None)
+                    if playerWS is not None:
+                        playerWS.send(text_data=allPlayerJson)
+
 
             # delay if not enough time has elapsed
             if tEnd > time.monotonic():

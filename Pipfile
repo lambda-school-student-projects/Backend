@@ -12,11 +12,12 @@ django = "*"
 python-decouple = "*"
 djangorestframework = "*"
 channels = "*"
-psycopg2 = "*"
 django-rest-auth = "*"
 django-allauth = "*"
 django-rest-api = "*"
 gunicorn = "*"
+psycopg2-binary = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.8"

@@ -65,7 +65,10 @@ class RoomConsumer(WebsocketConsumer):
     # send message data as param
     def chat_message(self, message):
         # send chat mesg to room => player, mesg
-        self.roomController.chatMessageSent(self.player, message)
+        print(message)
+        actualMessage = message.get("message", None)
+        if actualMessage:
+            self.roomController.chatMessageSent(self.player, message)
 
         # # send to all players exampe
         # for conn in consumerController: #how to send to all consumers

@@ -1,8 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
 import time
-from Rooms.RoomModel.Position import Position
-from Rooms.RoomModel.RoomController import roomController
+from Rooms.bsvPosition import Position
 from Rooms.models import Player
 from asgiref.sync import async_to_sync
 
@@ -19,9 +18,8 @@ class RoomConsumer(WebsocketConsumer):
             self.close()
             return
         consumerController[self.playerID] = self
-        self.player = Player.objects.get(id=self.playerID)
-        # Connect chat group
-        async_to_sync(self.channel_layer_group_add)("chat", self.channel_name)
+        from Rooms.bsvRoomController import roomController
+        self.player = roomController.allPlayers[self.playerID]
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
@@ -72,7 +70,7 @@ class RoomConsumer(WebsocketConsumer):
         positionList = data["position"]
         position = Position(positionList[0], positionList[1])
         self.player.setPosition(position)
-        # print(position)
+        # print(self.playerID, id(self.player), position)
 
 
     # def chatMessage(self, event):

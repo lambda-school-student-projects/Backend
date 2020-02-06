@@ -1,5 +1,5 @@
-from .Position import Position
-from .CardinalDirection import CardinalDirection
+from .bsvPosition import Position
+from .bsvCardinalDirection import CardinalDirection
 import uuid
 
 class Room():

@@ -1,8 +1,9 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from .RoomModel.RoomController import roomController
+from .bsvRoomController import roomController
 from livestream.consumers import consumerController
+from .models import Player
 
 import json
 
@@ -29,15 +30,23 @@ def moveToRoom(request):
         return JsonResponse({"error": "That room doesn't exist"})
     oldRoom = roomController.getRoom(oldRoomID)
     fromDirection = newRoom.cardinalDirectionOfConnectedRoom(oldRoom)
-
-    if fromDirection is not None:
-        roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
-        return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection), "spawnLocation": player.getPosition().toArray()})
-    else:
-        return JsonResponse({"error": "That room isn't connected"})
+    roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
+    return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection), "spawnLocation": player.getPosition().toArray()})
 
 
 @api_view(["GET"])
 def worldmap(request):
 
     return JsonResponse(roomController.toDict(), safe=True)
+
+
+@api_view(["POST"])
+def playerinfo(request):
+    if request.user.is_anonymous:
+        return
+    data = json.loads(request.body)
+    requestedId = data["ID"]
+    requestedPlayer = Player.objects.get(id = requestedId)
+    playerProperties = {"player_avatar":requestedPlayer.player_avatar, "username":requestedPlayer.user.username}
+    return JsonResponse(playerProperties)
+

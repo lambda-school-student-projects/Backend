@@ -60,6 +60,7 @@ class RoomController():
             position = Position(0, roomMid)
 
         player.setPosition(position)
+        player.setDestination(position)
 
     def removePlayerFromCurrentRoom(self, player):
         room = self.getRoom(player.current_room)
@@ -200,20 +201,20 @@ class RoomController():
     def gameLoop(self):
         tEnd = time.monotonic() - 1
         while time.monotonic() >= tEnd:
-            tEnd = time.monotonic() + 0.03333
+            tEnd = time.monotonic() + 0.333
 
 
             # game logic
             for room in self.occupiedRooms:
-                # room = Room("test")
                 allPlayerInfo = {}
                 for player in room.players:
-                    allPlayerInfo[str(player.id)] = { "position": player.getPosition().toArray() }
+                    position = player.getPosition()
+                    destination = player.getDestination()
+                    allPlayerInfo[str(player.id)] = { "position": position.toArray(), "destination": destination.toArray() }
                 
-                allPlayerJson = json.dumps({"messageType": "playerPositions", "data": allPlayerInfo})
+                allPlayerJson = json.dumps({"messageType": "positionPulse", "data": allPlayerInfo})
                 for player in room.players:
-                    # print(room.name, player.id)
-                    playerWS = consumerController.get(str(player.id), None)
+                    playerWS = consumerController.get(str(player.id), None) 
                     if playerWS is not None:
                         playerWS.send(text_data=allPlayerJson)
 

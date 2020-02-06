@@ -79,7 +79,10 @@ class RoomConsumer(WebsocketConsumer):
     def gotPlayerPositionUpdate(self, data):
         positionList = data["position"]
         position = Position(positionList[0], positionList[1])
+        destinationList = data["destination"]
+        destination = Position(destinationList[0], destinationList[1])
         self.player.setPosition(position)
+        self.player.setDestination(destination)
         # print(self.playerID, id(self.player), position)
 
 

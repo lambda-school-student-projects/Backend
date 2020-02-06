@@ -23,7 +23,6 @@ class RoomController():
         thread.daemon = True
         thread.start()
 
-
     def toDict(self):
         newDict = {}
         roomDict = {}
@@ -178,6 +177,18 @@ class RoomController():
             outStr += "\n"
 
         print(outStr)
+
+    def chatMessageSent(self, player, message):
+        if player:
+            messageDict = {"messageType": "roomchat", "data": {"message": message, "player": player.user.username}}
+            messageJson = json.dumps(messageDict)
+            room = self.getRoom(str(player.current_room))
+            if room:
+                for p in room.players:
+                    playerWS = consumerController.get(str(p.id), None)
+                    if playerWS is not None:
+                        playerWS.send(text_data=messageJson)
+
 
     def playerDisconnected(self, player):
         if player:

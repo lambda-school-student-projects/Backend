@@ -191,7 +191,7 @@ class RoomController():
                 # room = Room("test")
                 allPlayerInfo = list()
                 for player in room.players:
-                    playerInfo = {"id": str(player.id), "position": player.getPosition().toArray()}
+                    playerInfo = {str(player.id): {"position": player.getPosition().toArray()}}
                     allPlayerInfo.append(playerInfo)
                 
                 allPlayerJson = json.dumps({"messageType": "playerPositions", "data": allPlayerInfo})

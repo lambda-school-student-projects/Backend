@@ -8,6 +8,12 @@ from asgiref.sync import async_to_sync
 consumerController = {}
 
 class RoomConsumer(WebsocketConsumer):
+
+    def __init__(self, secondArg):
+        super().__init__(secondArg)
+        from Rooms.bsvRoomController import roomController
+        self.roomController = roomController
+
     def connect(self):
         self.accept()
         try:
@@ -18,14 +24,14 @@ class RoomConsumer(WebsocketConsumer):
             self.close()
             return
         consumerController[self.playerID] = self
-        from Rooms.bsvRoomController import roomController
-        self.player = roomController.allPlayers[self.playerID]
+        self.player = self.roomController.allPlayers[self.playerID]
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
         consumerController.pop(self.playerID, None)
         # disconnect chat group
-        async_to_sync(self.channel_layer_group_discard)("chat", self.channel_name)
+        # async_to_sync(self.channel_layer_group_discard)("chat", self.channel_name)
+        self.roomController.playerDisconnected(self.player)
 
     def receive(self, text_data):
         try:
@@ -37,28 +43,29 @@ class RoomConsumer(WebsocketConsumer):
             print("Failed decoding json - booting user.")
             self.close()
             return
-        # message = text_data_json['message']
 
-        if messageType == "playerID":
-            self.gotPlayerID(messageData)
-        elif messageType == "positionUpdate":
+        if messageType == "positionUpdate":
             self.gotPlayerPositionUpdate(messageData)
+
         # chat send to group
         elif messageType == "chat":
+            self.chat_message(messageData)
+            
+            
             # sefl.chat message(messageData)
-            async_to_sync(self.channel_layer.group_send)(
-                "chat",
-                {
-                    "type": "chat.message",
-                    "text": chatData
-                }
-            )
+            # async_to_sync(self.channel_layer.group_send)(
+            #     "chat",
+            #     {
+            #         "type": "chat.message",
+            #         "text": chatData
+            #     }
+            # )
     
     # chat sending message
     # send message data as param
-    def chat_message(self, event):
+    def chat_message(self, message):
         # send chat mesg to room => player, mesg
-        self.send(chatData=event['text'])
+        self.roomController.chatMessageSent(self.player, message)
 
         # # send to all players exampe
         # for conn in consumerController: #how to send to all consumers

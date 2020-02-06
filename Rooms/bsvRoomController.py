@@ -23,7 +23,6 @@ class RoomController():
         thread.daemon = True
         thread.start()
 
-
     def toDict(self):
         newDict = {}
         roomDict = {}
@@ -179,8 +178,26 @@ class RoomController():
 
         print(outStr)
 
-    def gameLoop(self):
+    def chatMessageSent(self, player, message):
+        if player:
+            messageDict = {"messageType": "roomchat", "data": message}
+            messageJson = json.dumps(messageDict)
+            room = self.getRoom(str(player.current_room))
+            if room:
+                for p in room.players:
+                    playerWS = consumerController.get(str(p.id), None)
+                    if playerWS is not None:
+                        playerWS.send(text_data=messageJson)
 
+
+    def playerDisconnected(self, player):
+        if player:
+            room = self.getRoom(str(player.current_room))
+            if room:
+                room.removePlayer(player)
+
+
+    def gameLoop(self):
         tEnd = time.monotonic() - 1
         while time.monotonic() >= tEnd:
             tEnd = time.monotonic() + 0.03333
@@ -191,7 +208,7 @@ class RoomController():
                 # room = Room("test")
                 allPlayerInfo = {}
                 for player in room.players:
-                    allPlayerInfo[str(player.id)] = { "position": player.getPosition().toArray()}
+                    allPlayerInfo[str(player.id)] = { "position": player.getPosition().toArray() }
                 
                 allPlayerJson = json.dumps({"messageType": "playerPositions", "data": allPlayerInfo})
                 for player in room.players:

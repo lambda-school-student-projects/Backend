@@ -4,6 +4,7 @@ import time
 from Rooms.RoomModel.Position import Position
 from Rooms.RoomModel.RoomController import roomController
 from Rooms.models import Player
+from asgiref.sync import async_to_sync
 
 consumerController = {}
 
@@ -19,16 +20,21 @@ class RoomConsumer(WebsocketConsumer):
             return
         consumerController[self.playerID] = self
         self.player = Player.objects.get(id=self.playerID)
+        # Connect chat group
+        async_to_sync(self.channel_layer_group_add)("chat", self.channel_name)
 
     def disconnect(self, close_code):
         print("close code: ", close_code)
         consumerController.pop(self.playerID, None)
+        # disconnect chat group
+        async_to_sync(self.channel_layer_group_discard)("chat", self.channel_name)
 
     def receive(self, text_data):
         try:
             text_data_json = json.loads(text_data)
             messageType = text_data_json["messageType"]
             messageData = text_data_json["data"]
+            # chatData = text_data_json["chat"]
         except:
             print("Failed decoding json - booting user.")
             self.close()
@@ -39,6 +45,22 @@ class RoomConsumer(WebsocketConsumer):
             self.gotPlayerID(messageData)
         elif messageType == "positionUpdate":
             self.gotPlayerPositionUpdate(messageData)
+        # chat send to group
+        elif messageType == "chat":
+            # sefl.chat message(messageData)
+            async_to_sync(self.channel_layer.group_send)(
+                "chat",
+                {
+                    "type": "chat.message",
+                    "text": chatData
+                }
+            )
+    
+    # chat sending message
+    # send message data as param
+    def chat_message(self, event):
+        # send chat mesg to room => player, mesg
+        self.send(chatData=event['text'])
 
         # # send to all players exampe
         # for conn in consumerController: #how to send to all consumers
@@ -51,7 +73,6 @@ class RoomConsumer(WebsocketConsumer):
         position = Position(positionList[0], positionList[1])
         self.player.setPosition(position)
         # print(position)
-
 
 
     # def chatMessage(self, event):

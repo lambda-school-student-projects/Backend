@@ -3,6 +3,7 @@ import json
 import time
 from Rooms.bsvPosition import Position
 from Rooms.models import Player
+from asgiref.sync import async_to_sync
 
 consumerController = {}
 
@@ -28,6 +29,8 @@ class RoomConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         print("close code: ", close_code)
         consumerController.pop(self.playerID, None)
+        # disconnect chat group
+        # async_to_sync(self.channel_layer_group_discard)("chat", self.channel_name)
         self.roomController.playerDisconnected(self.player)
 
     def receive(self, text_data):
@@ -35,16 +38,37 @@ class RoomConsumer(WebsocketConsumer):
             text_data_json = json.loads(text_data)
             messageType = text_data_json["messageType"]
             messageData = text_data_json["data"]
+            # chatData = text_data_json["chat"]
         except:
             print("Failed decoding json - booting user.")
             self.close()
             return
-        # message = text_data_json['message']
 
-        if messageType == "playerID":
-            self.gotPlayerID(messageData)
-        elif messageType == "positionUpdate":
+        if messageType == "positionUpdate":
             self.gotPlayerPositionUpdate(messageData)
+
+        # chat send to group
+        elif messageType == "chat":
+            self.chat_message(messageData)
+            
+            
+            # sefl.chat message(messageData)
+            # async_to_sync(self.channel_layer.group_send)(
+            #     "chat",
+            #     {
+            #         "type": "chat.message",
+            #         "text": chatData
+            #     }
+            # )
+    
+    # chat sending message
+    # send message data as param
+    def chat_message(self, message):
+        # send chat mesg to room => player, mesg
+        print(message)
+        actualMessage = message.get("message", None)
+        if actualMessage:
+            self.roomController.chatMessageSent(self.player, message)
 
         # # send to all players exampe
         # for conn in consumerController: #how to send to all consumers
@@ -57,7 +81,6 @@ class RoomConsumer(WebsocketConsumer):
         position = Position(positionList[0], positionList[1])
         self.player.setPosition(position)
         # print(self.playerID, id(self.player), position)
-
 
 
     # def chatMessage(self, event):

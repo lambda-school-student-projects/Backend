@@ -46,6 +46,8 @@ def moveToRoom(request):
 def worldmap(request):
 
     return JsonResponse(roomController.toDict(), safe=True)
+    # from django.http import HttpResponse ## useful for troubleshooting to give sorted keys
+    # return HttpResponse(json.dumps(roomController.toDict(), sort_keys=True), content_type="application/json")
 
 
 @api_view(["POST"])

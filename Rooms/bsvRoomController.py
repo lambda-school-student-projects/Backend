@@ -16,9 +16,9 @@ roomMid = roomSize / 2
 
 class RoomController():
     # pass an integer in to initializer to modify the room limit
-    def __init__(self, roomLimit=100):
+    def __init__(self, roomLimit=100, seed=time.time()):
         self.roomLimit = roomLimit
-        self.generateRooms()
+        self.generateRooms(seed)
         
         thread = threading.Thread(target=self.gameLoop, args=())
         thread.daemon = True
@@ -109,6 +109,7 @@ class RoomController():
                     roomQueue.enqueue(newRoom)
                 if self.roomEligibleToAppend(oldRoom):
                     roomQueue.enqueue(oldRoom)
+            # print(f"{len(self.rooms)-2}: added {newRoom.id} to {oldRoom.id} in {newDirection} FROM ({possibleDirections})")
 
     # must include an oldRoom and direction or the new room will sit abandoned and alone. Exception is made for initial room.
     def addRoomConnection(self, newRoom, oldRoom, direction):
@@ -134,6 +135,8 @@ class RoomController():
 
     # checks to see how many NSEW neighbors a new room would potentially have. returns true if the neighbor count is 1
     def canAddRoomAt(self, position):
+        if position in self.roomCoordinates:
+            return False
         nswe = [pos for pos in (position.nsewOne())]
 
         count = len([direction for direction in nswe if direction in self.roomCoordinates])
@@ -186,11 +189,23 @@ class RoomController():
 
         print(outStr)
 
+    def playerAttacked(self, player, hitPlayers):
+        if player:
+            room = self.getRoom(player.current_room)
+            if room:
+                broadcastMessage = {"messageType": "playerAttackBroadcast", "data": {"playerID": str(player.id), "hitPlayers": hitPlayers}}
+                broadcastJson = json.dumps(broadcastMessage)
+                for roomPlayer in room.players:
+                    playerWS = consumerController.get(str(roomPlayer.id), None)
+                    if playerWS is not None:
+                        playerWS.send(text_data=broadcastJson)
+
+
     def chatMessageSent(self, player, message):
         if player:
             messageDict = {"messageType": "roomchat", "data": {"message": message, "player": str(player.id)}}
             messageJson = json.dumps(messageDict)
-            room = self.getRoom(str(player.current_room))
+            room = self.getRoom(player.current_room)
             if room:
                 for p in room.players:
                     playerWS = consumerController.get(str(p.id), None)
@@ -200,7 +215,7 @@ class RoomController():
 
     def playerDisconnected(self, player):
         if player:
-            room = self.getRoom(str(player.current_room))
+            room = self.getRoom(player.current_room)
             if room:
                 room.removePlayer(player)
 
@@ -231,4 +246,4 @@ class RoomController():
                 time.sleep(tEnd - time.monotonic())
 
 
-roomController = RoomController()
+roomController = RoomController(100, 1581060566.638645)

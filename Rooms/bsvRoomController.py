@@ -200,7 +200,7 @@ class RoomController():
 
     def playerDisconnected(self, player):
         if player:
-            room = self.getRoom(str(player.current_room))
+            room = self.getRoom(player.current_room)
             if room:
                 room.removePlayer(player)
 

@@ -4,6 +4,7 @@ from .bsvCardinalDirection import CardinalDirection
 from .bsvRoom import Room
 # from Player import Player # ready for importing
 from livestream.consumers import consumerController
+from .models import Player
 import random
 import time
 import threading
@@ -31,10 +32,10 @@ class RoomController():
         newDict["rooms"] = roomDict
         newDict["roomCoordinates"] = [pos.toArray() for pos in self.roomCoordinates]
         newDict["spawnRoom"] = self.spawnRoom.id
+        newDict["seed"] = self.seed
         return newDict
 
     def getRoom(self, roomID):
-        roomID = str(roomID) ## sometimes the id is in uuid format - convert for dict key
         room = self.roomDict.get(roomID, None)
         return room
 
@@ -78,12 +79,16 @@ class RoomController():
         self.roomCoordinates = set()
         self.allPlayers = {}
 
+        Player.resetAllPlayerRooms()
+
         self.spawnRoom = Room("Spawn Area")
         self.addRoomConnection(self.spawnRoom, None, None)
 
     def generateRooms(self, seed=time.time()):
         self.resetAllRooms()
         random.seed(seed)
+        print("seed: ", seed)
+        self.seed = seed
 
         roomQueue = Queue()
         roomQueue.enqueue(self.spawnRoom)
@@ -93,7 +98,7 @@ class RoomController():
                 print("Somehow there are no valid rooms in the queue")
                 return
             oldRoom = roomQueue.dequeue()
-            newRoom = Room(f"Room {len(self.rooms)}")
+            newRoom = Room(f"Room {len(self.rooms)}", len(self.rooms))
 
             possibleDirections = list(self.roomEligibleDirections(oldRoom))
             possibleDirections.sort()
@@ -121,6 +126,8 @@ class RoomController():
                 return
 
         self.rooms.add(newRoom)
+        if self.roomDict.get(newRoom.id, None):
+            print("There is somehow a duplicate room. ROON FOR YOUR LIFE")
         self.roomDict[newRoom.id] = newRoom
         self.emptyRooms.add(newRoom)
         self.roomCoordinates.add(newRoom.position)

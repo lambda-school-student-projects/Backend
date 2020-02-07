@@ -13,6 +13,7 @@ def initialize(request):
         return
     user = request.user
     player = user.player
+    print(f"initialized player '{user.username}'")
     data = json.loads(request.body)
     player_avatar = data["player_avatar"]
     player.player_avatar = player_avatar
@@ -27,14 +28,17 @@ def moveToRoom(request):
     user = request.user
     player = user.player
     data = json.loads(request.body)
-    newRoomID = data['roomID']
-    oldRoomID = str(player.current_room)
+    oldRoomID = player.current_room
+    newRoomID = int(data['roomID'])
+    print(f"player '{user.username} requesting move to room {newRoomID} from {oldRoomID}")
     newRoom = roomController.getRoom(newRoomID)
     if newRoom is None:
+        print(f"player '{user.username} requesting move to room {newRoomID} from {oldRoomID} that doesn't exist")
         return JsonResponse({"error": "That room doesn't exist"})
     oldRoom = roomController.getRoom(oldRoomID)
     fromDirection = newRoom.cardinalDirectionOfConnectedRoom(oldRoom)
     roomController.spawnPlayerInRoom(player, newRoomID, fromDirection)
+    print(f"moved player '{user.username}' to room '{newRoom.name} from {fromDirection}")
     return JsonResponse({"currentRoom": player.current_room, "fromDirection": str(fromDirection), "spawnLocation": player.getPosition().toArray()})
 
 

@@ -13,7 +13,7 @@ import time
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    current_room = models.UUIDField(default=uuid4)
+    current_room = models.IntegerField(default=0)
     score = models.IntegerField(default=0)
     player_avatar = models.IntegerField(default=0)
     roomXPos = models.FloatField(default=0)
@@ -50,6 +50,13 @@ class Player(models.Model):
     def setRoom(self, newRoomID):
         self.current_room = newRoomID
         self.save()
+
+    def resetAllPlayerRooms():
+        players = Player.objects.all()
+        for player in players:
+            player.current_room = -1
+            player.save()
+
 
 @receiver(post_save, sender=User)
 def create_user_player(sender, instance, created=False, **kwargs):

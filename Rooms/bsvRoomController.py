@@ -16,9 +16,9 @@ roomMid = roomSize / 2
 
 class RoomController():
     # pass an integer in to initializer to modify the room limit
-    def __init__(self, roomLimit=100):
+    def __init__(self, roomLimit=100, seed=time.time()):
         self.roomLimit = roomLimit
-        self.generateRooms()
+        self.generateRooms(seed)
         
         thread = threading.Thread(target=self.gameLoop, args=())
         thread.daemon = True

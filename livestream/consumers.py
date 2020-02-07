@@ -65,7 +65,7 @@ class RoomConsumer(WebsocketConsumer):
     # send message data as param
     def chat_message(self, message):
         # send chat mesg to room => player, mesg
-        print(message)
+        print(self.player.user.username, message)
         actualMessage = message.get("message", None)
         if actualMessage:
             self.roomController.chatMessageSent(self.player, actualMessage)

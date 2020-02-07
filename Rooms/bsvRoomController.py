@@ -181,7 +181,7 @@ class RoomController():
 
     def chatMessageSent(self, player, message):
         if player:
-            messageDict = {"messageType": "roomchat", "data": {"message": message, "player": player.user.username}}
+            messageDict = {"messageType": "roomchat", "data": {"message": message, "player": str(player.id)}}
             messageJson = json.dumps(messageDict)
             room = self.getRoom(str(player.current_room))
             if room:

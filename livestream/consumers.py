@@ -68,7 +68,7 @@ class RoomConsumer(WebsocketConsumer):
         print(message)
         actualMessage = message.get("message", None)
         if actualMessage:
-            self.roomController.chatMessageSent(self.player, message)
+            self.roomController.chatMessageSent(self.player, actualMessage)
 
         # # send to all players exampe
         # for conn in consumerController: #how to send to all consumers

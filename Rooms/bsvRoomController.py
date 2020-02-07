@@ -189,11 +189,23 @@ class RoomController():
 
         print(outStr)
 
+    def playerAttacked(self, player, hitPlayers):
+        if player:
+            room = self.getRoom(player.current_room)
+            if room:
+                broadcastMessage = {"messageType": "playerAttackBroadcast", "data": {"playerID": str(player.id), "hitPlayers": hitPlayers}}
+                broadcastJson = json.dumps(broadcastMessage)
+                for roomPlayer in room.players:
+                    playerWS = consumerController.get(str(roomPlayer.id), None)
+                    if playerWS is not None:
+                        playerWS.send(text_data=broadcastJson)
+
+
     def chatMessageSent(self, player, message):
         if player:
             messageDict = {"messageType": "roomchat", "data": {"message": message, "player": str(player.id)}}
             messageJson = json.dumps(messageDict)
-            room = self.getRoom(str(player.current_room))
+            room = self.getRoom(player.current_room)
             if room:
                 for p in room.players:
                     playerWS = consumerController.get(str(p.id), None)

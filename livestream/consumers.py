@@ -43,10 +43,11 @@ class RoomConsumer(WebsocketConsumer):
 
         if messageType == "positionUpdate":
             self.gotPlayerPositionUpdate(messageData)
-
         # chat send to group
         elif messageType == "chat":
             self.chat_message(messageData)
+        elif messageType == "playerAttack":
+            self.playerAttack(messageData)
 
     
     # chat sending message
@@ -58,8 +59,6 @@ class RoomConsumer(WebsocketConsumer):
         if actualMessage:
             self.roomController.chatMessageSent(self.player, actualMessage)
 
-
-
     def gotPlayerPositionUpdate(self, data):
         positionList = data["position"]
         position = Position(positionList[0], positionList[1])
@@ -68,3 +67,8 @@ class RoomConsumer(WebsocketConsumer):
         self.player.setPosition(position)
         self.player.setDestination(destination)
         # print(self.playerID, id(self.player), position)
+
+    def playerAttack(self, data):
+        direction = data.get("direction", None)
+        hitPlayers = data.get("hitPlayers", None)
+        self.roomController.playerAttacked(self.player, hitPlayers)

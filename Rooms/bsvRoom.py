@@ -3,7 +3,7 @@ from .bsvCardinalDirection import CardinalDirection
 import uuid
 
 class Room():
-    def __init__(self, name, position=Position.zero(), north=None, south=None, east=None, west=None):
+    def __init__(self, name, id=0, position=Position.zero(), north=None, south=None, east=None, west=None):
         self.name = name
         self.position = position
         self.north = north
@@ -12,7 +12,7 @@ class Room():
         self.west = west
         self.players = set()
         self.itemReward = None
-        self.id = str(uuid.uuid4())
+        self.id = id
         self.occupied = False
 
     def toDict(self):
@@ -146,7 +146,6 @@ class Room():
         else:
             return " "
 
-    def __str__(self):
-        connectionCount = len(self.connectedInDirections())
-        roomsString = "room" + ("" if connectionCount == 1 else "s")
-        return f"'Room: {self.name} id: {self.id} - connected to {connectionCount} {roomsString}'"
+    def __repr__(self):
+        connections = [x.id for x in [self.north, self.south, self.east, self.west] if x is not None]
+        return f"'Room: {self.name} id: {self.id} - connected to '{connections}'"

@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]',
-                 'bsvbattleroyale.herokuapp.com', 'bsvbattle.redig.me', 'imac.nl.redig.me']
+                 'dev.bsvbattle.redig.me', 'bsvbattle.redig.me', 'imac.nl.redig.me']
 
 SITE_ID = 1
 
